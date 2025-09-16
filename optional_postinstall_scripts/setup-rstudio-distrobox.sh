@@ -7,7 +7,7 @@ set -e  # Exit on any error
 
 echo "Creating debian-testing distrobox..."
 distrobox create --name debian-testing --image docker.io/library/debian:testing \
-  --additional-flags "--env=DISPLAY --env=WAYLAND_DISPLAY --env=XDG_RUNTIME_DIR --env=PULSE_RUNTIME_PATH --volume=/tmp/.X11-unix:/tmp/.X11-unix:rw --volume=$XDG_RUNTIME_DIR:$XDG_RUNTIME_DIR:rw --device=/dev/dri"
+  --additional-flags "--env=DISPLAY --env=WAYLAND_DISPLAY --env=XDG_RUNTIME_DIR --env=PULSE_RUNTIME_PATH --volume=/tmp/.X11-unix:/tmp/.X11-unix:rw --device=/dev/dri"
 
 echo "Entering debian-testing distrobox and installing RStudio..."
 distrobox enter debian-testing -- bash -c '
