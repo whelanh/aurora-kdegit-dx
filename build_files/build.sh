@@ -90,16 +90,16 @@ pushd "$tmpdir" >/dev/null
 git clone https://invent.kde.org/sdk/kde-builder.git
 cd kde-builder
 
-sudo mkdir -p /usr/share/kde-builder
-sudo cp -r ./* /usr/share/kde-builder
+mkdir -p /usr/share/kde-builder
+cp -r ./* /usr/share/kde-builder
 
-sudo mkdir -p /usr/bin
-sudo ln -sf /usr/share/kde-builder/kde-builder /usr/bin/kde-builder
+mkdir -p /usr/bin
+ln -sf /usr/share/kde-builder/kde-builder /usr/bin/kde-builder
 
-sudo mkdir -p /usr/share/zsh/site-functions
-sudo ln -sf /usr/share/kde-builder/data/completions/zsh/_kde-builder \
+mkdir -p /usr/share/zsh/site-functions
+ln -sf /usr/share/kde-builder/data/completions/zsh/_kde-builder \
     /usr/share/zsh/site-functions/_kde-builder
-sudo ln -sf /usr/share/kde-builder/data/completions/zsh/_kde-builder_projects_and_groups \
+ln -sf /usr/share/kde-builder/data/completions/zsh/_kde-builder_projects_and_groups \
     /usr/share/zsh/site-functions/_kde-builder_projects_and_groups
 
 popd >/dev/null
