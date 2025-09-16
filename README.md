@@ -5,7 +5,7 @@ This repository builds custom [bootc](https://github.com/bootc-dev/bootc) images
 - **Aurora KDE Git DX**: Standard variant based on `aurora-dx:latest` with KDE unstable builds, published as `aurora-kdegit-dx:latest`
 - **Aurora KDE Git DX NVIDIA**: NVIDIA-optimized variant based on `aurora-dx-nvidia:latest`, published as `aurora-kdegit-dx-nvidia:latest`
 
-Both images include KDE Plasma unstable builds, complete KDE development stack, and tools like kde-builder for KDE development.
+Both images include KDE Plasma unstable builds, complete KDE development stack, and tools like kde-builder for KDE development. Idiosyncratically (for my use case), R and Rstudio are added as well.
 
 # Community
 
@@ -119,11 +119,32 @@ Once pushed, go look at the Actions tab on your Github repository's page.  The g
 
 ## Step 3: Switch to Your Image
 
-From your bootc system, run the following command substituting in your Github username and image name where noted.
-```bash
-sudo bootc switch ghcr.io/<username>/<image_name>
+First rebase to the unsigned image, to get the proper signing keys and policies installed:
+
 ```
-This should queue your image for the next reboot, which you can do immediately after the command finishes. You have officially set up your custom image! See the following section for an explanation of the important parts of the template for customization.
+rpm-ostree rebase ostree-unverified-registry:ghcr.io/whelanh/aurora-kdegit-dx-nvidia:latest
+```
+or for non-NVIDIA
+```
+rpm-ostree rebase ostree-unverified-registry:ghcr.io/whelanh/aurora-kdegit-dx:latest
+```
+Reboot to complete the rebase:
+
+```
+systemctl reboot
+```
+Then rebase to the signed image, like so:
+```
+rpm-ostree rebase ostree-image-signed:docker://ghcr.io/whelanh/aurora-kdegit-dx-nvidia:latest
+```
+or for non-NVIDIA
+```
+rpm-ostree rebase ostree-image-signed:docker://ghcr.io/whelanh/aurora-kdegit-dx:latest
+```
+Reboot again to complete the installation
+```
+systemctl reboot
+```
 
 # Repository Contents
 
