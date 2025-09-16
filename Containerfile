@@ -2,15 +2,17 @@
 FROM scratch AS ctx
 COPY build_files /
 
-# Base Image
-FROM ghcr.io/ublue-os/bazzite:latest
+# Build argument for base image selection
+ARG BASE_IMAGE="ghcr.io/ublue-os/aurora-dx:latest"
 
-## Other possible base images include:
-# FROM ghcr.io/ublue-os/bazzite:latest
-# FROM ghcr.io/ublue-os/bluefin-nvidia:stable
+# Base Image - Aurora DX or Aurora DX NVIDIA
+FROM ${BASE_IMAGE}
+
+## Base image options:
+# ghcr.io/ublue-os/aurora-dx:latest (default)
+# ghcr.io/ublue-os/aurora-dx-nvidia:latest
 # 
-# ...  so on, here are more base images
-# Universal Blue Images: https://github.com/orgs/ublue-os/packages
+# Other Universal Blue Images: https://github.com/orgs/ublue-os/packages
 # Fedora base image: quay.io/fedora/fedora-bootc:41
 # CentOS base images: quay.io/centos-bootc/centos-bootc:stream10
 

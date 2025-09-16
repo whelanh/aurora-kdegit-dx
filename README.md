@@ -1,6 +1,11 @@
-# image-template
+# Aurora KDE Git DX
 
-This repository is meant to be a template for building your own custom [bootc](https://github.com/bootc-dev/bootc) image. This template is the recommended way to make customizations to any image published by the Universal Blue Project.
+This repository builds custom [bootc](https://github.com/bootc-dev/bootc) images for Aurora KDE development environments. It creates two variants:
+
+- **Aurora KDE Git DX**: Standard variant based on `aurora-dx:latest` with KDE unstable builds, published as `aurora-kdegit-dx:latest`
+- **Aurora KDE Git DX NVIDIA**: NVIDIA-optimized variant based on `aurora-dx-nvidia:latest`, published as `aurora-kdegit-dx-nvidia:latest`
+
+Both images include KDE Plasma unstable builds, complete KDE development stack, and tools like kde-builder for KDE development.
 
 # Community
 
@@ -77,32 +82,32 @@ gh secret set SIGNING_SECRET < cosign.key
 ```
 </details>
 
-### Step 2b: Choosing Your Base Image
+### Step 2b: Base Images
 
-To choose a base image, simply modify the line in the container file starting with `FROM`. This will be the image your image derives from, and is your starting point for modifications.
-For a base image, you can choose any of the Universal Blue images or start from a Fedora Atomic system. Below this paragraph is a dropdown with a non-exhaustive list of potential base images.
+This template is configured to build Aurora KDE DX variants:
 
-<details>
-    <summary>Base Images</summary>
+- **Standard variant**: Uses `ghcr.io/ublue-os/aurora-dx:latest` as the base
+- **NVIDIA variant**: Uses `ghcr.io/ublue-os/aurora-dx-nvidia:latest` as the base
 
-    - Bazzite: `ghcr.io/ublue-os/bazzite:stable`
-    - Aurora: `ghcr.io/ublue-os/aurora:stable`
-    - Bluefin: `ghcr.io/ublue-os/bluefin:stable`
-    - Universal Blue Base: `ghcr.io/ublue-os/base-main:latest`
-    - Fedora: `quay.io/fedora/fedora-bootc:42`
+The base images are automatically selected during the build process using build arguments. You can modify the base images by changing the environment variables in the Justfile:
 
-    You can find more Universal Blue images on the [packages page](https://github.com/orgs/ublue-os/packages).
-</details>
+```bash
+export base_image_dx := "ghcr.io/ublue-os/aurora-dx:latest"
+export base_image_nvidia := "ghcr.io/ublue-os/aurora-dx-nvidia:latest"
+```
 
-If you don't know which image to pick, choosing the one your system is currently on is the best bet for a smooth transition. To find out what image your system currently uses, run the following command:
+To check your current bootc image:
 ```bash
 sudo bootc status
 ```
-This will show you all the info you need to know about your current image. The image you are currently on is displayed after `Booted image:`. Paste that information after the `FROM` statement in the Containerfile to set it as your base image.
 
 ### Step 2c: Changing Names
 
-Change the first line in the [Justfile](./Justfile) to your image's name.
+The default image name is set to `aurora-kdegit-dx` in the [Justfile](./Justfile). You can change the first line to customize your image's name:
+
+```bash
+export image_name := "your-custom-name"
+```
 
 To commit and push all the files changed and added in step 2 into your Github repository:
 ```bash
@@ -124,11 +129,17 @@ This should queue your image for the next reboot, which you can do immediately a
 
 ## Containerfile
 
-The [Containerfile](./Containerfile) defines the operations used to customize the selected image.This file is the entrypoint for your image build, and works exactly like a regular podman Containerfile. For reference, please see the [Podman Documentation](https://docs.podman.io/en/latest/Introduction.html).
+The [Containerfile](./Containerfile) defines the operations used to customize the Aurora DX base images. It uses build arguments to select between the standard Aurora DX and NVIDIA variants. This file is the entrypoint for your image build, and works exactly like a regular podman Containerfile. For reference, please see the [Podman Documentation](https://docs.podman.io/en/latest/Introduction.html).
 
 ## build.sh
 
-The [build.sh](./build_files/build.sh) file is called from your Containerfile. It is the best place to install new packages or make any other customization to your system. There are customization examples contained within it for your perusal.
+The [build.sh](./build_files/build.sh) file is called from your Containerfile and handles the KDE development environment setup. It:
+
+- Enables KDE unstable COPRs (`solopasha/plasma-unstable`, `solopasha/kde-gear-unstable`)
+- Swaps existing packages with unstable versions
+- Installs KDE build dependencies and development tools
+- Sets up kde-builder for KDE development
+- Enables system services like podman socket and waydroid
 
 ## build.yml
 
@@ -173,23 +184,34 @@ To use it, you must have installed [just](https://just.systems/man/en/introducti
 
 ## Environment Variables
 
-- `image_name`: The name of the image (default: "image-template").
+- `image_name`: The name of the image (default: "aurora-kdegit-dx").
 - `default_tag`: The default tag for the image (default: "latest").
 - `bib_image`: The Bootc Image Builder (BIB) image (default: "quay.io/centos-bootc/bootc-image-builder:latest").
+- `base_image_dx`: Aurora DX base image (default: "ghcr.io/ublue-os/aurora-dx:latest").
+- `base_image_nvidia`: Aurora DX NVIDIA base image (default: "ghcr.io/ublue-os/aurora-dx-nvidia:latest").
 
 ## Building The Image
 
 ### `just build`
 
-Builds a container image using Podman.
+Builds a container image using Podman with variant support.
 
 ```bash
-just build $target_image $tag
+just build $target_image $tag $variant
 ```
 
 Arguments:
 - `$target_image`: The tag you want to apply to the image (default: `$image_name`).
 - `$tag`: The tag for the image (default: `$default_tag`).
+- `$variant`: The variant to build - "dx" (default) or "nvidia".
+
+### Variant-specific Build Commands
+
+```bash
+just build-dx       # Build standard Aurora DX variant
+just build-nvidia   # Build NVIDIA variant
+just build-all      # Build both variants
+```
 
 ## Building and Running Virtual Machines and ISOs
 

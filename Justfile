@@ -1,6 +1,8 @@
-export image_name := env("IMAGE_NAME", "image-template") # output image name, usually same as repo name, change as needed
+export image_name := env("IMAGE_NAME", "aurora-kdegit-dx") # output image name, usually same as repo name, change as needed
 export default_tag := env("DEFAULT_TAG", "latest")
 export bib_image := env("BIB_IMAGE", "quay.io/centos-bootc/bootc-image-builder:latest")
+export base_image_dx := env("BASE_IMAGE_DX", "ghcr.io/ublue-os/aurora-dx:latest")
+export base_image_nvidia := env("BASE_IMAGE_NVIDIA", "ghcr.io/ublue-os/aurora-dx-nvidia:latest")
 
 alias build-vm := build-qcow2
 alias rebuild-vm := rebuild-qcow2
@@ -86,7 +88,9 @@ sudoif command *args:
 #
 
 # Build the image using the specified parameters
-build $target_image=image_name $tag=default_tag:
+# Usage: just build [target_image] [tag] [variant]
+# variant: "dx" (default) or "nvidia"
+build $target_image=image_name $tag=default_tag $variant="dx":
     #!/usr/bin/env bash
 
     BUILD_ARGS=()
@@ -94,11 +98,38 @@ build $target_image=image_name $tag=default_tag:
         BUILD_ARGS+=("--build-arg" "SHA_HEAD_SHORT=$(git rev-parse --short HEAD)")
     fi
 
+    # Set base image based on variant
+    case "{{ variant }}" in
+        "nvidia")
+            BUILD_ARGS+=("--build-arg" "BASE_IMAGE={{ base_image_nvidia }}")
+            IMAGE_TAG="${target_image}-nvidia:${tag}"
+            ;;
+        "dx"|*)
+            BUILD_ARGS+=("--build-arg" "BASE_IMAGE={{ base_image_dx }}")
+            IMAGE_TAG="${target_image}:${tag}"
+            ;;
+    esac
+
+    echo "Building {{ variant }} variant with base image: $(echo "${BUILD_ARGS[@]}" | grep BASE_IMAGE | cut -d'=' -f2-)"
+    
     podman build \
         "${BUILD_ARGS[@]}" \
         --pull=newer \
-        --tag "${target_image}:${tag}" \
+        --tag "$IMAGE_TAG" \
         .
+
+# Build both DX and NVIDIA variants
+build-all $target_image=image_name $tag=default_tag:
+    just build {{ target_image }} {{ tag }} dx
+    just build {{ target_image }} {{ tag }} nvidia
+
+# Build DX variant specifically
+build-dx $target_image=image_name $tag=default_tag:
+    just build {{ target_image }} {{ tag }} dx
+
+# Build NVIDIA variant specifically
+build-nvidia $target_image=image_name $tag=default_tag:
+    just build {{ target_image }} {{ tag }} nvidia
 
 # Command: _rootful_load_image
 # Description: This script checks if the current user is root or running under sudo. If not, it attempts to resolve the image tag using podman inspect.
@@ -195,31 +226,31 @@ _build-bib $target_image $tag $type $config: (_rootful_load_image target_image t
 #   config: The configuration file to use for the build (deafult: disk_config/disk.toml)
 
 # Example: just _rebuild-bib localhost/fedora latest qcow2 disk_config/disk.toml
-_rebuild-bib $target_image $tag $type $config: (build target_image tag) && (_build-bib target_image tag type config)
+_rebuild-bib $target_image $tag $type $config $variant="dx": (build target_image tag variant) && (_build-bib target_image tag type config)
 
 # Build a QCOW2 virtual machine image
 [group('Build Virtal Machine Image')]
-build-qcow2 $target_image=("localhost/" + image_name) $tag=default_tag: && (_build-bib target_image tag "qcow2" "disk_config/disk.toml")
+build-qcow2 $target_image=("localhost/" + image_name) $tag=default_tag $variant="dx": && (_build-bib target_image tag "qcow2" "disk_config/disk.toml")
 
 # Build a RAW virtual machine image
 [group('Build Virtal Machine Image')]
-build-raw $target_image=("localhost/" + image_name) $tag=default_tag: && (_build-bib target_image tag "raw" "disk_config/disk.toml")
+build-raw $target_image=("localhost/" + image_name) $tag=default_tag $variant="dx": && (_build-bib target_image tag "raw" "disk_config/disk.toml")
 
 # Build an ISO virtual machine image
 [group('Build Virtal Machine Image')]
-build-iso $target_image=("localhost/" + image_name) $tag=default_tag: && (_build-bib target_image tag "iso" "disk_config/iso.toml")
+build-iso $target_image=("localhost/" + image_name) $tag=default_tag $variant="dx": && (_build-bib target_image tag "iso" "disk_config/iso-kde.toml")
 
 # Rebuild a QCOW2 virtual machine image
 [group('Build Virtal Machine Image')]
-rebuild-qcow2 $target_image=("localhost/" + image_name) $tag=default_tag: && (_rebuild-bib target_image tag "qcow2" "disk_config/disk.toml")
+rebuild-qcow2 $target_image=("localhost/" + image_name) $tag=default_tag $variant="dx": && (_rebuild-bib target_image tag "qcow2" "disk_config/disk.toml" variant)
 
 # Rebuild a RAW virtual machine image
 [group('Build Virtal Machine Image')]
-rebuild-raw $target_image=("localhost/" + image_name) $tag=default_tag: && (_rebuild-bib target_image tag "raw" "disk_config/disk.toml")
+rebuild-raw $target_image=("localhost/" + image_name) $tag=default_tag $variant="dx": && (_rebuild-bib target_image tag "raw" "disk_config/disk.toml" variant)
 
 # Rebuild an ISO virtual machine image
 [group('Build Virtal Machine Image')]
-rebuild-iso $target_image=("localhost/" + image_name) $tag=default_tag: && (_rebuild-bib target_image tag "iso" "disk_config/iso.toml")
+rebuild-iso $target_image=("localhost/" + image_name) $tag=default_tag $variant="dx": && (_rebuild-bib target_image tag "iso" "disk_config/iso-kde.toml" variant)
 
 # Run a virtual machine with the specified image type and configuration
 _run-vm $target_image $tag $type $config:
