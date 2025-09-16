@@ -9,6 +9,10 @@ error() {
     echo -e "\n\033[1;31mERROR: $1\033[0m\n" >&2
 }
 
+### Add Rstudio
+dnf5 -y copr enable "iucar/rstudio" || error "Failed to enable Rstudio COPR"
+dnf5 install -y r R-devel rstudio gcc-gfortran || error "Failed to install R and Rstudio"
+
 COPRS=(
     "solopasha/plasma-unstable"
     "solopasha/kde-gear-unstable"
