@@ -14,9 +14,10 @@ This is a bootc (bootable container) image template for creating custom Aurora K
 ### Core Components
 
 - **Containerfile**: Defines the container build process using build args for base image selection
-- **build_files/build.sh**: Main build script that installs KDE unstable packages, development dependencies, and tools
+- **build_files/build.sh**: Main build script that installs KDE unstable packages, development dependencies, tools, R/RStudio via COPR, and Flatpak applications
 - **Justfile**: Command runner with comprehensive build, test, and VM management recipes for both variants
 - **disk_config/**: Configuration files for building bootable disk images (QCOW2, RAW, ISO)
+- **optional_postinstall_scripts/**: Optional post-install utilities (currently includes Flatpak installer)
 
 ### Build Process
 
@@ -24,8 +25,10 @@ This is a bootc (bootable container) image template for creating custom Aurora K
    - Standard: `ghcr.io/ublue-os/aurora-dx:latest`
    - NVIDIA: `ghcr.io/ublue-os/aurora-dx-nvidia:latest`
 2. **Package Management**: Enables unstable KDE COPRs (`solopasha/plasma-unstable`, `solopasha/kde-gear-unstable`)
-3. **Development Stack**: Installs KDE build dependencies, development tools, and kde-builder
-4. **System Services**: Enables podman socket and waydroid services
+3. **R/RStudio Setup**: Enables `iucar/rstudio` COPR and installs `R`, `R-devel`, `rstudio`, and `gcc-gfortran`
+4. **Development Stack**: Installs KDE build dependencies, development tools, and kde-builder
+5. **Flatpak Applications**: Installs curated set of development and productivity applications system-wide
+6. **System Services**: Enables podman socket and waydroid services
 
 ## Common Development Commands
 
@@ -133,9 +136,25 @@ The build includes:
 ### Additional Tools
 
 - **Development**: neovim, zsh, git, clang-devel
+- **Data Science**: R, R-devel, RStudio, gcc-gfortran (via `iucar/rstudio` COPR)
+- **Flatpak Applications**: Pre-installed system-wide Flatpaks including chess database, gradient editor, note-taking, database browser, and finance manager
 - **Containerization**: podman with socket enabled
 - **Android**: waydroid for Android app development
 - **Build tools**: flatpak-builder for creating Flatpak applications
+
+## Pre-installed Flatpak Applications
+
+The following Flatpak applications are installed system-wide during the image build process:
+
+- **io.github.benini.scid**: Shane's Chess Information Database
+- **be.alexandervanhee.gradia**: Gradia - gradient editor
+- **com.github.xournalpp.xournalpp**: Xournal++ - handwriting notetaking software
+- **org.sqlitebrowser.sqlitebrowser**: DB Browser for SQLite
+- **org.kde.kmymoney**: KMyMoney - personal finance manager
+
+## Optional Post-Install Scripts
+
+> Note: The Flatpak installer script has been integrated into the main build process. Earlier optional scripts (chezmoi dotfiles and RStudio in Distrobox) were removed. The `optional_postinstall_scripts/` directory may be removed in future updates.
 
 ## Configuration Files
 
@@ -165,8 +184,9 @@ sudo bootc switch ghcr.io/<username>/<image_name>
 ## Important Notes
 
 - Container signing is enabled - ensure `cosign.key` is never committed to git
+- Public signing key in `cosign.pub` has been updated to current maintainer's key
 - Base image can be changed by modifying the `BASE_IMAGE` build arg in Containerfile
 - COPR repositories provide bleeding-edge KDE packages with priority=1
 - Build artifacts are output to `output/` directory
 - VM images use QEMU with hardware acceleration when available
-- GitHub Actions builds both variants automatically using matrix strategy
+- GitHub Actions builds both variants automatically using matrix strategy; concurrency grouping adjusted to prevent overlapping runs

@@ -9,10 +9,6 @@ error() {
     echo -e "\n\033[1;31mERROR: $1\033[0m\n" >&2
 }
 
-### Add Rstudio
-dnf5 -y copr enable "iucar/rstudio" || error "Failed to enable Rstudio COPR"
-dnf5 install -y r R-devel rstudio gcc-gfortran || error "Failed to install R and Rstudio"
-
 COPRS=(
     "solopasha/plasma-unstable"
     "solopasha/kde-gear-unstable"
@@ -108,33 +104,6 @@ ln -sf /usr/share/kde-builder/data/completions/zsh/_kde-builder_projects_and_gro
 
 popd >/dev/null
 rm -rf "$tmpdir"
-
-### 📦 Install Flatpaks system-wide
-log "Installing Flatpak applications..."
-FLATPAKS=(
-    "io.github.benini.scid"              # Shane's Chess Information Database
-    "be.alexandervanhee.gradia"          # Gradia - gradient editor
-    "com.github.xournalpp.xournalpp"    # Xournal++ - handwriting notetaking software
-    "org.sqlitebrowser.sqlitebrowser"   # DB Browser for SQLite
-    "org.kde.kmymoney"                   # KMyMoney - personal finance manager
-)
-
-# Add flathub remote if not already added
-flatpak remote-add --if-not-exists --system flathub https://flathub.org/repo/flathub.flatpakrepo
-
-# Install each Flatpak system-wide
-for flatpak in "${FLATPAKS[@]}"; do
-    log "Installing $flatpak..."
-    if ! flatpak install --system -y flathub "$flatpak" 2>/tmp/flatpak-error; then
-        error "Failed to install $flatpak: $(cat /tmp/flatpak-error | head -n3)"
-        echo "  ⏩ Skipping $flatpak"
-    else
-        echo "  ✅ Successfully installed $flatpak"
-    fi
-done
-
-# Clean up
-rm -f /tmp/flatpak-error
 
 ### 🔌 Enable systemd units
 log "Enabling podman socket..."
