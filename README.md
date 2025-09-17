@@ -1,6 +1,6 @@
 # 🖥️ Aurora KDE Git DX
 
-This repository builds custom [bootc](https://github.com/bootc-dev/bootc) images for Aurora KDE development environments. It creates two variants:
+This repository builds custom [bootc](https://github.com/bootc-dev/bootc) images for Aurora KDE development environments. It is forked from a Bazzite version created by Hadi Chokr ([silverhadch/bazzite-kde-dx](https://github.com/silverhadch/bazzite-kde-dx)). It creates two variants:
 
 - **Aurora KDE Git DX**: Standard variant based on `aurora-dx:latest` with KDE unstable builds, published as `aurora-kdegit-dx:latest`
 - **Aurora KDE Git DX NVIDIA**: NVIDIA-optimized variant based on `aurora-dx-nvidia:latest`, published as `aurora-kdegit-dx-nvidia:latest`
