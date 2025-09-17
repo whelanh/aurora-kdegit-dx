@@ -1,52 +1,102 @@
-# Aurora KDE Git DX
+# 🖥️ Aurora KDE Git DX
 
 This repository builds custom [bootc](https://github.com/bootc-dev/bootc) images for Aurora KDE development environments. It creates two variants:
 
 - **Aurora KDE Git DX**: Standard variant based on `aurora-dx:latest` with KDE unstable builds, published as `aurora-kdegit-dx:latest`
 - **Aurora KDE Git DX NVIDIA**: NVIDIA-optimized variant based on `aurora-dx-nvidia:latest`, published as `aurora-kdegit-dx-nvidia:latest`
 
-**Both images include KDE Plasma and Gear unstable builds and a curated selection of Flatpak applications.**  Idiosyncratically (for my use case), R and RStudio are added as well. *If you want a complete KDE development stack and tools like kde-builder for KDE development, you can uncomment those sections in the build_files/build.sh.* 
+**Both images include KDE Plasma and Gear unstable builds and a curated selection of Flatpak applications.**  Idiosyncratically (for my use case), R and RStudio are added as well. 
 
-# Community
+*If you want a complete KDE development stack and tools like kde-builder for KDE development, you can uncomment those sections in the build_files/build.sh.* 
+
+## build.sh
+
+The [build.sh](./build_files/build.sh) file is called from your Containerfile and handles the KDE development environment setup. It:
+
+- Enables R/RStudio COPR (`iucar/rstudio`) and installs R, R-devel, RStudio, and gcc-gfortran
+- Enables KDE unstable COPRs (`solopasha/plasma-unstable`, `solopasha/kde-gear-unstable`)
+- Swaps existing packages with unstable versions
+- Installs KDE build dependencies and development tools  **[currently commented out]**
+- Sets up kde-builder for KDE development  **[currently commented out]**
+- Installs curated Flatpak applications system-wide:
+  - **io.github.benini.scid**: Shane's Chess Information Database
+  - **be.alexandervanhee.gradia**: Gradia - gradient editor
+  - **com.github.xournalpp.xournalpp**: Xournal++ - handwriting notetaking software
+  - **org.sqlitebrowser.sqlitebrowser**: DB Browser for SQLite
+  - **org.kde.kmymoney**: KMyMoney - personal finance manager
+- Enables system services like podman socket and waydroid
+
+## Switch to This Image
+
+First rebase to the unsigned image, to get the proper signing keys and policies installed:
+
+```
+rpm-ostree rebase ostree-unverified-registry:ghcr.io/whelanh/aurora-kdegit-dx-nvidia:latest
+```
+or for non-NVIDIA
+```
+rpm-ostree rebase ostree-unverified-registry:ghcr.io/whelanh/aurora-kdegit-dx:latest
+```
+Reboot to complete the rebase:
+
+```
+systemctl reboot
+```
+Then rebase to the signed image, like so:
+```
+rpm-ostree rebase ostree-image-signed:docker://ghcr.io/whelanh/aurora-kdegit-dx-nvidia:latest
+```
+or for non-NVIDIA
+```
+rpm-ostree rebase ostree-image-signed:docker://ghcr.io/whelanh/aurora-kdegit-dx:latest
+```
+Reboot again to complete the installation
+```
+systemctl reboot
+```
+
+# 🛠 Useful Background Information On This Template
+
+## Community
 
 If you have questions about this template after following the instructions, try the following spaces:
 - [Universal Blue Forums](https://universal-blue.discourse.group/)
 - [Universal Blue Discord](https://discord.gg/WEu6BdFEtp)
 - [bootc discussion forums](https://github.com/bootc-dev/bootc/discussions) - This is not an Universal Blue managed space, but is an excellent resource if you run into issues with building bootc images.
 
-# How to Use
+## How to Use
 
 To get started on your first bootc image, simply read and follow the steps in the next few headings.
 If you prefer instructions in video form, TesterTech created an excellent tutorial, embedded below.
 
 [![Video Tutorial](https://img.youtube.com/vi/IxBl11Zmq5w/0.jpg)](https://www.youtube.com/watch?v=IxBl11Zmq5wE)
 
-## Step 0: Prerequisites
+### Step 0: Prerequisites
 
 These steps assume you have the following:
 - A Github Account
 - A machine running a bootc image (e.g. Bazzite, Bluefin, Aurora, or Fedora Atomic)
 - Experience installing and using CLI programs
 
-## Step 1: Preparing the Template
+### Step 1: Preparing the Template
 
-### Step 1a: Copying the Template
+#### Step 1a: Copying the Template
 
 Select `Use this Template` on this page. You can set the name and description of your repository to whatever you would like, but all other settings should be left untouched.
 
 Once you have finished copying the template, you need to enable the Github Actions workflows for your new repository.
 To enable the workflows, go to the `Actions` tab of the new repository and click the button to enable workflows.
 
-### Step 1b: Cloning the New Repository
+#### Step 1b: Cloning the New Repository
 
 Here I will defer to the much superior GitHub documentation on the matter. You can use whichever method is easiest.
 [GitHub Documentation](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository)
 
 Once you have the repository on your local drive, proceed to the next step.
 
-## Step 2: Initial Setup
+### Step 2: Initial Setup
 
-### Step 2a: Creating a Cosign Key
+#### Step 2a: Creating a Cosign Key
 
 Container signing is important for end-user security and is enabled on all Universal Blue images. By default the image builds *will fail* if you don't.
 
@@ -101,7 +151,7 @@ To check your current bootc image:
 sudo bootc status
 ```
 
-### Step 2c: Changing Names
+#### Step 2c: Changing Names
 
 The default image name is set to `aurora-kdegit-dx` in the [Justfile](./Justfile). You can change the first line to customize your image's name:
 
@@ -117,57 +167,13 @@ git push
 ```
 Once pushed, go look at the Actions tab on your Github repository's page.  The green checkmark should be showing on the top commit, which means your new image is ready!
 
-## Step 3: Switch to Your Image
-
-First rebase to the unsigned image, to get the proper signing keys and policies installed:
-
-```
-rpm-ostree rebase ostree-unverified-registry:ghcr.io/whelanh/aurora-kdegit-dx-nvidia:latest
-```
-or for non-NVIDIA
-```
-rpm-ostree rebase ostree-unverified-registry:ghcr.io/whelanh/aurora-kdegit-dx:latest
-```
-Reboot to complete the rebase:
-
-```
-systemctl reboot
-```
-Then rebase to the signed image, like so:
-```
-rpm-ostree rebase ostree-image-signed:docker://ghcr.io/whelanh/aurora-kdegit-dx-nvidia:latest
-```
-or for non-NVIDIA
-```
-rpm-ostree rebase ostree-image-signed:docker://ghcr.io/whelanh/aurora-kdegit-dx:latest
-```
-Reboot again to complete the installation
-```
-systemctl reboot
-```
+## Step 3 (see "Switching To This Image above)
 
 # Repository Contents
 
 ## Containerfile
 
 The [Containerfile](./Containerfile) defines the operations used to customize the Aurora DX base images. It uses build arguments to select between the standard Aurora DX and NVIDIA variants. This file is the entrypoint for your image build, and works exactly like a regular podman Containerfile. For reference, please see the [Podman Documentation](https://docs.podman.io/en/latest/Introduction.html).
-
-## build.sh
-
-The [build.sh](./build_files/build.sh) file is called from your Containerfile and handles the KDE development environment setup. It:
-
-- Enables R/RStudio COPR (`iucar/rstudio`) and installs R, R-devel, RStudio, and gcc-gfortran
-- Enables KDE unstable COPRs (`solopasha/plasma-unstable`, `solopasha/kde-gear-unstable`)
-- Swaps existing packages with unstable versions
-- Installs KDE build dependencies and development tools  **[currently commented out]**
-- Sets up kde-builder for KDE development  **[currently commented out]**
-- Installs curated Flatpak applications system-wide:
-  - **io.github.benini.scid**: Shane's Chess Information Database
-  - **be.alexandervanhee.gradia**: Gradia - gradient editor
-  - **com.github.xournalpp.xournalpp**: Xournal++ - handwriting notetaking software
-  - **org.sqlitebrowser.sqlitebrowser**: DB Browser for SQLite
-  - **org.kde.kmymoney**: KMyMoney - personal finance manager
-- Enables system services like podman socket and waydroid
 
 ## build.yml
 
