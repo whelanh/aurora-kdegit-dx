@@ -5,7 +5,7 @@ This repository builds custom [bootc](https://github.com/bootc-dev/bootc) images
 - **Aurora KDE Git DX**: Standard variant based on `aurora-dx:latest` with KDE unstable builds, published as `aurora-kdegit-dx:latest`
 - **Aurora KDE Git DX NVIDIA**: NVIDIA-optimized variant based on `aurora-dx-nvidia:latest`, published as `aurora-kdegit-dx-nvidia:latest`
 
-Both images include KDE Plasma unstable builds, complete KDE development stack, tools like kde-builder for KDE development, and a curated selection of Flatpak applications. Idiosyncratically (for my use case), R and RStudio are added as well.
+**Both images include KDE Plasma and Gear unstable builds and a curated selection of Flatpak applications.**  If you want a complete KDE development stack and tools like kde-builder for KDE development, you can uncomment those sections in the build.sh. Idiosyncratically (for my use case), R and RStudio are added as well.
 
 # Community
 
@@ -159,8 +159,8 @@ The [build.sh](./build_files/build.sh) file is called from your Containerfile an
 - Enables R/RStudio COPR (`iucar/rstudio`) and installs R, R-devel, RStudio, and gcc-gfortran
 - Enables KDE unstable COPRs (`solopasha/plasma-unstable`, `solopasha/kde-gear-unstable`)
 - Swaps existing packages with unstable versions
-- Installs KDE build dependencies and development tools
-- Sets up kde-builder for KDE development
+- Installs KDE build dependencies and development tools  **[currently commented out]**
+- Sets up kde-builder for KDE development  **[currently commented out]**
 - Installs curated Flatpak applications system-wide:
   - **io.github.benini.scid**: Shane's Chess Information Database
   - **be.alexandervanhee.gradia**: Gradia - gradient editor
