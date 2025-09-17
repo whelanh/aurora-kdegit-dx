@@ -5,7 +5,7 @@ This repository builds custom [bootc](https://github.com/bootc-dev/bootc) images
 - **Aurora KDE Git DX**: Standard variant based on `aurora-dx:latest` with KDE unstable builds, published as `aurora-kdegit-dx:latest`
 - **Aurora KDE Git DX NVIDIA**: NVIDIA-optimized variant based on `aurora-dx-nvidia:latest`, published as `aurora-kdegit-dx-nvidia:latest`
 
-**Both images include KDE Plasma and Gear unstable builds and a curated selection of Flatpak applications.**  Idiosyncratically (for my use case), R and RStudio are added as well. *If you want a complete KDE development stack and tools like kde-builder for KDE development, you can uncomment those sections in the build.sh.* 
+**Both images include KDE Plasma and Gear unstable builds and a curated selection of Flatpak applications.**  Idiosyncratically (for my use case), R and RStudio are added as well. *If you want a complete KDE development stack and tools like kde-builder for KDE development, you can uncomment those sections in the build_files/build.sh.* 
 
 # Community
 
