@@ -5,7 +5,7 @@ This repository builds custom [bootc](https://github.com/bootc-dev/bootc) images
 - **Aurora KDE Git DX**: Standard variant based on `aurora-dx:latest` with KDE unstable builds, published as `aurora-kdegit-dx:latest`
 - **Aurora KDE Git DX NVIDIA**: NVIDIA-optimized variant based on `aurora-dx-nvidia:latest`, published as `aurora-kdegit-dx-nvidia:latest`
 
-Both images include KDE Plasma unstable builds, complete KDE development stack, and tools like kde-builder for KDE development. Idiosyncratically (for my use case), R and Rstudio are added as well.
+Both images include KDE Plasma unstable builds, complete KDE development stack, tools like kde-builder for KDE development, and a curated selection of Flatpak applications. Idiosyncratically (for my use case), R and RStudio are added as well.
 
 # Community
 
@@ -156,10 +156,17 @@ The [Containerfile](./Containerfile) defines the operations used to customize th
 
 The [build.sh](./build_files/build.sh) file is called from your Containerfile and handles the KDE development environment setup. It:
 
+- Enables R/RStudio COPR (`iucar/rstudio`) and installs R, R-devel, RStudio, and gcc-gfortran
 - Enables KDE unstable COPRs (`solopasha/plasma-unstable`, `solopasha/kde-gear-unstable`)
 - Swaps existing packages with unstable versions
 - Installs KDE build dependencies and development tools
 - Sets up kde-builder for KDE development
+- Installs curated Flatpak applications system-wide:
+  - **io.github.benini.scid**: Shane's Chess Information Database
+  - **be.alexandervanhee.gradia**: Gradia - gradient editor
+  - **com.github.xournalpp.xournalpp**: Xournal++ - handwriting notetaking software
+  - **org.sqlitebrowser.sqlitebrowser**: DB Browser for SQLite
+  - **org.kde.kmymoney**: KMyMoney - personal finance manager
 - Enables system services like podman socket and waydroid
 
 ## build.yml
