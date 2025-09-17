@@ -78,36 +78,36 @@ else
 fi
 
 ### 🎮 Development Tools
-log "Installing additional dev tools..."
-dev_tools=(neovim zsh flatpak-builder kdevelop kdevelop-devel kdevelop-libs)
-for tool in "${dev_tools[@]}"; do
-    if ! dnf5 install -y --skip-broken --skip-unavailable --allowerasing "$tool" 2>/tmp/dnf-error; then
-        error "Failed to install $tool: $(grep -v '^Last metadata' /tmp/dnf-error | head -n5)"
-    fi
-done
+# log "Installing additional dev tools..."
+# dev_tools=(neovim zsh flatpak-builder kdevelop kdevelop-devel kdevelop-libs)
+# for tool in "${dev_tools[@]}"; do
+#     if ! dnf5 install -y --skip-broken --skip-unavailable --allowerasing "$tool" 2>/tmp/dnf-error; then
+#         error "Failed to install $tool: $(grep -v '^Last metadata' /tmp/dnf-error | head -n5)"
+#     fi
+# done
 
 ### 🛠 Install kde-builder (manual clone + symlinks)
-log "Installing kde-builder..."
-tmpdir=$(mktemp -d)
-pushd "$tmpdir" >/dev/null
+# log "Installing kde-builder..."
+# tmpdir=$(mktemp -d)
+# pushd "$tmpdir" >/dev/null
 
-git clone https://invent.kde.org/sdk/kde-builder.git
-cd kde-builder
+# git clone https://invent.kde.org/sdk/kde-builder.git
+# cd kde-builder
 
-mkdir -p /usr/share/kde-builder
-cp -r ./* /usr/share/kde-builder
+# mkdir -p /usr/share/kde-builder
+# cp -r ./* /usr/share/kde-builder
 
-mkdir -p /usr/bin
-ln -sf /usr/share/kde-builder/kde-builder /usr/bin/kde-builder
+# mkdir -p /usr/bin
+# ln -sf /usr/share/kde-builder/kde-builder /usr/bin/kde-builder
 
-mkdir -p /usr/share/zsh/site-functions
-ln -sf /usr/share/kde-builder/data/completions/zsh/_kde-builder \
-    /usr/share/zsh/site-functions/_kde-builder
-ln -sf /usr/share/kde-builder/data/completions/zsh/_kde-builder_projects_and_groups \
-    /usr/share/zsh/site-functions/_kde-builder_projects_and_groups
+# mkdir -p /usr/share/zsh/site-functions
+# ln -sf /usr/share/kde-builder/data/completions/zsh/_kde-builder \
+#     /usr/share/zsh/site-functions/_kde-builder
+# ln -sf /usr/share/kde-builder/data/completions/zsh/_kde-builder_projects_and_groups \
+#     /usr/share/zsh/site-functions/_kde-builder_projects_and_groups
 
-popd >/dev/null
-rm -rf "$tmpdir"
+# popd >/dev/null
+# rm -rf "$tmpdir"
 
 ### 📦 Install Flatpaks system-wide
 log "Installing Flatpak applications..."
