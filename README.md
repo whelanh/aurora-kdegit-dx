@@ -7,7 +7,7 @@ This repository builds custom [bootc](https://github.com/bootc-dev/bootc) images
 
 **Both images include KDE Plasma and Gear unstable builds and a curated selection of Flatpak applications.**  Idiosyncratically (for my use case), R and RStudio are added as well.  If R, Rstudio and Flatpaks are not desired, you can comment them out in the `build_files/build.sh` file. 
 
-*If you want a complete KDE development stack and tools like kde-builder for KDE development, you can uncomment those sections in the `build_files/build.sh.` file.* 
+*If you want a complete KDE development stack and tools like kde-builder for KDE development, you can uncomment those sections in the `build_files/build.sh` file.* 
 
 ## build.sh
 
