@@ -116,6 +116,7 @@ FLATPAKS=(
     "com.github.xournalpp.xournalpp"    # Xournal++ - handwriting notetaking software
     "org.sqlitebrowser.sqlitebrowser"   # DB Browser for SQLite
     "org.kde.kmymoney"                   # KMyMoney - personal finance manager
+    "org.kde.isoimagewriter"              # Iso Imager Writer - writing images to USB
 )
 
 # Add flathub remote if not already added
