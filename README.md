@@ -24,6 +24,7 @@ The [build.sh](./build_files/build.sh) file is called from your Containerfile an
   - **com.github.xournalpp.xournalpp**: Xournal++ - handwriting notetaking software
   - **org.sqlitebrowser.sqlitebrowser**: DB Browser for SQLite
   - **org.kde.kmymoney**: KMyMoney - personal finance manager
+  - **org.kde.isoimagewriter**: Iso Image Writer
 - Enables system services like podman socket and waydroid
 
 ## Switch to This Image
