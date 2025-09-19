@@ -14,7 +14,9 @@ This is a bootc (bootable container) image template for creating custom Aurora K
 ### Core Components
 
 - **Containerfile**: Defines the container build process using build args for base image selection
-- **build_files/build.sh**: Main build script that installs KDE unstable packages, development dependencies, tools, R/RStudio via COPR, and Flatpak applications
+- **build_files/build.sh**: Main build script that installs KDE unstable packages, development dependencies, tools, and R/RStudio via COPR
+- **build_files/99-custom-flatpaks.just**: Custom ujust recipes for automatic Flatpak application management
+- **build_files/aurora-kdegit-dx-setup.service**: Systemd user service for automatic first-login setup
 - **Justfile**: Command runner with comprehensive build, test, and VM management recipes for both variants
 - **disk_config/**: Configuration files for building bootable disk images (QCOW2, RAW, ISO)
 - **optional_postinstall_scripts/**: Optional post-install utilities (currently includes Flatpak installer)
@@ -27,8 +29,8 @@ This is a bootc (bootable container) image template for creating custom Aurora K
 2. **Package Management**: Enables unstable KDE COPRs (`solopasha/plasma-unstable`, `solopasha/kde-gear-unstable`)
 3. **R/RStudio Setup**: Enables `iucar/rstudio` COPR and installs `R`, `R-devel`, `rstudio`, and `gcc-gfortran`
 4. **Development Stack**: Installs KDE build dependencies, development tools, and kde-builder
-5. **Flatpak Applications**: Installs curated set of development and productivity applications system-wide
-6. **System Services**: Enables podman socket and waydroid services
+5. **Flatpak Management**: Installs ujust recipes and systemd service for automatic Flatpak application management
+6. **System Services**: Enables podman socket, waydroid services, and automatic setup service
 
 ## Common Development Commands
 
@@ -137,24 +139,32 @@ The build includes:
 
 - **Development**: neovim, zsh, git, clang-devel
 - **Data Science**: R, R-devel, RStudio, gcc-gfortran (via `iucar/rstudio` COPR)
-- **Flatpak Applications**: Pre-installed system-wide Flatpaks including chess database, gradient editor, note-taking, database browser, and finance manager
+- **Flatpak Management**: Automatic ujust-based installation of development Flatpaks on first login
 - **Containerization**: podman with socket enabled
 - **Android**: waydroid for Android app development
 - **Build tools**: flatpak-builder for creating Flatpak applications
 
-## Pre-installed Flatpak Applications
+## Automatic Flatpak Management
 
-The following Flatpak applications are installed system-wide during the image build process:
+The image includes custom ujust recipes that automatically install the following Flatpak applications on first user login:
 
 - **io.github.benini.scid**: Shane's Chess Information Database
 - **be.alexandervanhee.gradia**: Gradia - gradient editor
 - **com.github.xournalpp.xournalpp**: Xournal++ - handwriting notetaking software
 - **org.sqlitebrowser.sqlitebrowser**: DB Browser for SQLite
 - **org.kde.kmymoney**: KMyMoney - personal finance manager
+- **org.kde.isoimagewriter**: ISO Image Writer - writing images to USB
+
+### Available ujust Commands
+
+- `ujust auto-setup-flatpaks` - Run automatic setup (executed automatically on first login)
+- `ujust install-dev-flatpaks` - Manually install all development Flatpaks
+- `ujust remove-dev-flatpaks` - Remove all development Flatpaks (preserves user data)
+- `ujust list-dev-flatpaks` - Check installation status of development Flatpaks
 
 ## Optional Post-Install Scripts
 
-> Note: The Flatpak installer script has been integrated into the main build process. Earlier optional scripts (chezmoi dotfiles and RStudio in Distrobox) were removed. The `optional_postinstall_scripts/` directory may be removed in future updates.
+> Note: Flatpak management has been migrated to ujust recipes with automatic setup. Earlier optional scripts (chezmoi dotfiles and RStudio in Distrobox) were removed. The `optional_postinstall_scripts/` directory may be removed in future updates.
 
 ## Configuration Files
 

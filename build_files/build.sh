@@ -108,33 +108,9 @@ fi
 # popd >/dev/null
 # rm -rf "$tmpdir"
 
-### 📦 Install Flatpaks system-wide
-log "Installing Flatpak applications..."
-FLATPAKS=(
-    "io.github.benini.scid"              # Shane's Chess Information Database
-    "be.alexandervanhee.gradia"          # Gradia - gradient editor
-    "com.github.xournalpp.xournalpp"    # Xournal++ - handwriting notetaking software
-    "org.sqlitebrowser.sqlitebrowser"   # DB Browser for SQLite
-    "org.kde.kmymoney"                   # KMyMoney - personal finance manager
-    "org.kde.isoimagewriter"              # Iso Imager Writer - writing images to USB
-)
-
-# Add flathub remote if not already added
-flatpak remote-add --if-not-exists --system flathub https://flathub.org/repo/flathub.flatpakrepo
-
-# Install each Flatpak system-wide
-for flatpak in "${FLATPAKS[@]}"; do
-    log "Installing $flatpak..."
-    if ! flatpak install --system -y flathub "$flatpak" 2>/tmp/flatpak-error; then
-        error "Failed to install $flatpak: $(cat /tmp/flatpak-error | head -n3)"
-        echo "  ⏩ Skipping $flatpak"
-    else
-        echo "  ✅ Successfully installed $flatpak"
-    fi
-done
-
-# Clean up
-rm -f /tmp/flatpak-error
+### 📦 Flatpak installation moved to ujust recipe
+# Flatpaks are now installed via ujust recipe after boot
+# See build_files/99-custom-flatpaks.just
 
 ### 🔌 Enable systemd units
 log "Enabling podman socket..."
@@ -142,3 +118,6 @@ systemctl enable podman.socket || error "Failed to enable podman.socket"
 
 log "Enabling waydroid service..."
 systemctl enable waydroid-container.service || error "Failed to enable waydroid-container.service"
+
+log "Enabling Aurora KDE Git DX auto-setup service..."
+systemctl --global enable aurora-kdegit-dx-setup.service || error "Failed to enable auto-setup service"

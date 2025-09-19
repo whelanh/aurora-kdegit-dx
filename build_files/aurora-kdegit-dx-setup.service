@@ -1,0 +1,13 @@
+[Unit]
+Description=Aurora KDE Git DX First-time Setup
+After=graphical-session.target
+Wants=graphical-session.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/ujust auto-setup-flatpaks
+Environment=PATH=/usr/bin:/bin
+RemainAfterExit=yes
+
+[Install]
+WantedBy=default.target

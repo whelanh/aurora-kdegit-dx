@@ -5,7 +5,7 @@ This repository builds custom [bootc](https://github.com/bootc-dev/bootc) images
 - **Aurora KDE Git DX**: Standard variant based on `aurora-dx:latest` with KDE unstable builds, published as `aurora-kdegit-dx:latest`
 - **Aurora KDE Git DX NVIDIA**: NVIDIA-optimized variant based on `aurora-dx-nvidia:latest`, published as `aurora-kdegit-dx-nvidia:latest`
 
-**Both images include KDE Plasma and Gear unstable builds and a curated selection of Flatpak applications.**  Idiosyncratically (for my use case), R and RStudio are added as well.  If R, Rstudio and Flatpaks are not desired, you can comment them out in the `build_files/build.sh` file. 
+**Both images include KDE Plasma and Gear unstable builds and automatic Flatpak application management via ujust recipes.**  Idiosyncratically (for my use case), R and RStudio are added as well.  If R or RStudio are not desired, you can comment them out in the `build_files/build.sh` file.
 
 *If you want a complete KDE development stack and tools like kde-builder for KDE development, you can uncomment those sections in the `build_files/build.sh` file.* 
 
@@ -18,14 +18,28 @@ The [build.sh](./build_files/build.sh) file is called from your Containerfile an
 - Swaps existing packages with unstable versions
 - Installs KDE build dependencies and development tools  **[currently commented out]**
 - Sets up kde-builder for KDE development  **[currently commented out]**
-- Installs curated Flatpak applications system-wide:
-  - **io.github.benini.scid**: Shane's Chess Information Database
-  - **be.alexandervanhee.gradia**: Gradia - gradient editor
-  - **com.github.xournalpp.xournalpp**: Xournal++ - handwriting notetaking software
-  - **org.sqlitebrowser.sqlitebrowser**: DB Browser for SQLite
-  - **org.kde.kmymoney**: KMyMoney - personal finance manager
-  - **org.kde.isoimagewriter**: Iso Image Writer
 - Enables system services like podman socket and waydroid
+- Installs custom ujust recipes for automatic Flatpak management
+
+## 📦 Automatic Flatpak Management
+
+This image includes custom ujust recipes that automatically manage a curated selection of Flatpak applications:
+
+- **io.github.benini.scid**: Shane's Chess Information Database
+- **be.alexandervanhee.gradia**: Gradia - gradient editor
+- **com.github.xournalpp.xournalpp**: Xournal++ - handwriting notetaking software
+- **org.sqlitebrowser.sqlitebrowser**: DB Browser for SQLite
+- **org.kde.kmymoney**: KMyMoney - personal finance manager
+- **org.kde.isoimagewriter**: ISO Image Writer - writing images to USB
+
+### Available ujust Commands
+
+- `ujust auto-setup-flatpaks` - Automatically install all development Flatpaks (runs once on first login)
+- `ujust install-dev-flatpaks` - Manually install all development Flatpaks
+- `ujust remove-dev-flatpaks` - Remove all development Flatpaks (keeps user data)
+- `ujust list-dev-flatpaks` - Show installation status of all development Flatpaks
+
+**Note**: Flatpaks are automatically installed on first user login, so no manual intervention is required.
 
 ## Switch to This Image
 
