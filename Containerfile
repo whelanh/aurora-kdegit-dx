@@ -21,7 +21,7 @@ FROM ${BASE_IMAGE}
 ## the following RUN directive does all the things required to run "build.sh" as recommended.
 
 # Copy custom ujust recipes and systemd service
-COPY build_files/99-custom-flatpaks.just /tmp/custom-flatpaks.just
+COPY build_files/99-custom-flatpaks.just /opt/custom-flatpaks.just
 COPY build_files/aurora-kdegit-dx-setup.service /usr/lib/systemd/user/
 
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
