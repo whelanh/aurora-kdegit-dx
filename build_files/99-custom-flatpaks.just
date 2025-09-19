@@ -1,23 +1,44 @@
 # Custom Flatpak installations for Aurora KDE Git DX
 # This file contains ujust recipes for managing custom Flatpak applications
 
+# Development and productivity Flatpaks list - defined once and used by all recipes
+FLATPAKS := '''
+io.github.benini.scid
+be.alexandervanhee.gradia
+com.github.xournalpp.xournalpp
+org.sqlitebrowser.sqlitebrowser
+org.kde.kmymoney
+org.kde.isoimagewriter
+'''
+
 # Install development and productivity Flatpaks
 install-dev-flatpaks:
     #!/usr/bin/env bash
     echo "Installing development and productivity Flatpaks..."
     
-    # List of Flatpaks to install
-    FLATPAKS=(
-        "io.github.benini.scid"              # Shane's Chess Information Database
-        "be.alexandervanhee.gradia"          # Gradia - gradient editor  
-        "com.github.xournalpp.xournalpp"    # Xournal++ - handwriting notetaking software
-        "org.sqlitebrowser.sqlitebrowser"   # DB Browser for SQLite
-        "org.kde.kmymoney"                   # KMyMoney - personal finance manager
-        "org.kde.isoimagewriter"             # ISO Image Writer - writing images to USB
+    # Convert the FLATPAKS string into an array
+    IFS=$'\n' read -rd '' -a FLATPAKS <<< "{{ FLATPAKS }}"
+    
+    # Remove empty elements (if any)
+    FLATPAKS=("${FLATPAKS[@]//[[:space:]]/}")
+    FLATPAKS=("${FLATPAKS[@]//^$/}")
+    
+    # Application descriptions
+    declare -A DESCRIPTIONS=(
+        ["io.github.benini.scid"]="Shane's Chess Information Database"
+        ["be.alexandervanhee.gradia"]="Gradia - gradient editor"
+        ["com.github.xournalpp.xournalpp"]="Xournal++ - handwriting notetaking software"
+        ["org.sqlitebrowser.sqlitebrowser"]="DB Browser for SQLite"
+        ["org.kde.kmymoney"]="KMyMoney - personal finance manager"
+        ["org.kde.isoimagewriter"]="ISO Image Writer - writing images to USB"
     )
     
     echo "The following Flatpaks will be installed:"
-    printf '  • %s\n' "${FLATPAKS[@]}"
+    for flatpak in "${FLATPAKS[@]}"; do
+        if [[ -n "$flatpak" ]]; then
+            echo "  • $flatpak - ${DESCRIPTIONS[$flatpak]}"
+        fi
+    done
     echo
     
     # Add flathub remote if not already added (user scope)
@@ -28,14 +49,16 @@ install-dev-flatpaks:
     
     # Install each Flatpak
     for flatpak in "${FLATPAKS[@]}"; do
-        if flatpak list --user | grep -q "$flatpak"; then
-            echo "✓ $flatpak is already installed"
-        else
-            echo "Installing $flatpak..."
-            if flatpak install --user -y flathub "$flatpak"; then
-                echo "✓ Successfully installed $flatpak"
+        if [[ -n "$flatpak" ]]; then
+            if flatpak list --user | grep -q "$flatpak"; then
+                echo "✓ $flatpak is already installed"
             else
-                echo "✗ Failed to install $flatpak"
+                echo "Installing $flatpak..."
+                if flatpak install --user -y flathub "$flatpak"; then
+                    echo "✓ Successfully installed $flatpak"
+                else
+                    echo "✗ Failed to install $flatpak"
+                fi
             fi
         fi
     done
@@ -49,21 +72,21 @@ remove-dev-flatpaks:
     #!/usr/bin/env bash
     echo "Removing development and productivity Flatpaks..."
     
-    FLATPAKS=(
-        "io.github.benini.scid"
-        "be.alexandervanhee.gradia"  
-        "com.github.xournalpp.xournalpp"
-        "org.sqlitebrowser.sqlitebrowser"
-        "org.kde.kmymoney"
-        "org.kde.isoimagewriter"
-    )
+    # Convert the FLATPAKS string into an array
+    IFS=$'\n' read -rd '' -a FLATPAKS <<< "{{ FLATPAKS }}"
+    
+    # Remove empty elements (if any)
+    FLATPAKS=("${FLATPAKS[@]//[[:space:]]/}")
+    FLATPAKS=("${FLATPAKS[@]//^$/}")
     
     for flatpak in "${FLATPAKS[@]}"; do
-        if flatpak list --user | grep -q "$flatpak"; then
-            echo "Removing $flatpak..."
-            flatpak uninstall --user -y "$flatpak"
-        else
-            echo "✓ $flatpak is not installed"
+        if [[ -n "$flatpak" ]]; then
+            if flatpak list --user | grep -q "$flatpak"; then
+                echo "Removing $flatpak..."
+                flatpak uninstall --user -y "$flatpak"
+            else
+                echo "✓ $flatpak is not installed"
+            fi
         fi
     done
     
@@ -78,15 +101,12 @@ auto-setup-flatpaks:
         echo "🚀 Aurora KDE Git DX: First-time setup"
         echo "Installing development Flatpaks automatically..."
         
-        # List of Flatpaks to install (same as install-dev-flatpaks)
-        FLATPAKS=(
-            "io.github.benini.scid"              # Shane's Chess Information Database
-            "be.alexandervanhee.gradia"          # Gradia - gradient editor  
-            "com.github.xournalpp.xournalpp"    # Xournal++ - handwriting notetaking software
-            "org.sqlitebrowser.sqlitebrowser"   # DB Browser for SQLite
-            "org.kde.kmymoney"                   # KMyMoney - personal finance manager
-            "org.kde.isoimagewriter"             # ISO Image Writer - writing images to USB
-        )
+        # Convert the FLATPAKS string into an array
+        IFS=$'\n' read -rd '' -a FLATPAKS <<< "{{ FLATPAKS }}"
+        
+        # Remove empty elements (if any)
+        FLATPAKS=("${FLATPAKS[@]//[[:space:]]/}")
+        FLATPAKS=("${FLATPAKS[@]//^$/}")
         
         # Add flathub remote if not already added (user scope)
         if ! flatpak remote-list --user | grep -q flathub; then
@@ -96,14 +116,16 @@ auto-setup-flatpaks:
         
         # Install each Flatpak quietly
         for flatpak in "${FLATPAKS[@]}"; do
-            if flatpak list --user | grep -q "$flatpak"; then
-                echo "✓ $flatpak is already installed"
-            else
-                echo "Installing $flatpak..."
-                if flatpak install --user -y flathub "$flatpak" >/dev/null 2>&1; then
-                    echo "✓ Successfully installed $flatpak"
+            if [[ -n "$flatpak" ]]; then
+                if flatpak list --user | grep -q "$flatpak"; then
+                    echo "✓ $flatpak is already installed"
                 else
-                    echo "✗ Failed to install $flatpak"
+                    echo "Installing $flatpak..."
+                    if flatpak install --user -y flathub "$flatpak" >/dev/null 2>&1; then
+                        echo "✓ Successfully installed $flatpak"
+                    else
+                        echo "✗ Failed to install $flatpak"
+                    fi
                 fi
             fi
         done
@@ -123,20 +145,31 @@ auto-setup-flatpaks:
 # List installed development Flatpaks
 list-dev-flatpaks:
     #!/usr/bin/env bash
-    echo "Development Flatpaks installed:"
-    FLATPAKS=(
-        "io.github.benini.scid"
-        "be.alexandervanhee.gradia"
-        "com.github.xournalpp.xournalpp"
-        "org.sqlitebrowser.sqlitebrowser"
-        "org.kde.kmymoney"
-        "org.kde.isoimagewriter"
+    echo "Development Flatpaks status:"
+    
+    # Convert the FLATPAKS string into an array
+    IFS=$'\n' read -rd '' -a FLATPAKS <<< "{{ FLATPAKS }}"
+    
+    # Remove empty elements (if any)
+    FLATPAKS=("${FLATPAKS[@]//[[:space:]]/}")
+    FLATPAKS=("${FLATPAKS[@]//^$/}")
+    
+    # Application descriptions
+    declare -A DESCRIPTIONS=(
+        ["io.github.benini.scid"]="Shane's Chess Information Database"
+        ["be.alexandervanhee.gradia"]="Gradia - gradient editor"
+        ["com.github.xournalpp.xournalpp"]="Xournal++ - handwriting notetaking software"
+        ["org.sqlitebrowser.sqlitebrowser"]="DB Browser for SQLite"
+        ["org.kde.kmymoney"]="KMyMoney - personal finance manager"
+        ["org.kde.isoimagewriter"]="ISO Image Writer - writing images to USB"
     )
     
     for flatpak in "${FLATPAKS[@]}"; do
-        if flatpak list --user | grep -q "$flatpak"; then
-            echo "  ✓ $flatpak"
-        else
-            echo "  ✗ $flatpak (not installed)"
+        if [[ -n "$flatpak" ]]; then
+            if flatpak list --user | grep -q "$flatpak"; then
+                echo "  ✓ $flatpak - ${DESCRIPTIONS[$flatpak]}"
+            else
+                echo "  ✗ $flatpak - ${DESCRIPTIONS[$flatpak]} (not installed)"
+            fi
         fi
     done
