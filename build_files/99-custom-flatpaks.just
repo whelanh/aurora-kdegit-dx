@@ -9,6 +9,7 @@ com.github.xournalpp.xournalpp
 org.sqlitebrowser.sqlitebrowser
 org.kde.kmymoney
 org.kde.isoimagewriter
+com.github.zocker_160.SyncThingy  
 '''
 
 # Install development and productivity Flatpaks
@@ -31,6 +32,7 @@ install-dev-flatpaks:
         ["org.sqlitebrowser.sqlitebrowser"]="DB Browser for SQLite"
         ["org.kde.kmymoney"]="KMyMoney - personal finance manager"
         ["org.kde.isoimagewriter"]="ISO Image Writer - writing images to USB"
+        ["com.github.zocker_160.SyncThingy"]="SyncThingy - for file sharing"
     )
     
     echo "The following Flatpaks will be installed:"

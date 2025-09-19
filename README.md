@@ -31,6 +31,7 @@ This image includes custom ujust recipes that automatically manage a curated sel
 - **org.sqlitebrowser.sqlitebrowser**: DB Browser for SQLite
 - **org.kde.kmymoney**: KMyMoney - personal finance manager
 - **org.kde.isoimagewriter**: ISO Image Writer - writing images to USB
+- **com.github.zocker_160.SyncThingy**: SyncThingy - for file sharing  
 
 ### Available ujust Commands
 
