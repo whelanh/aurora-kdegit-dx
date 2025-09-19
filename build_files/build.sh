@@ -112,6 +112,21 @@ fi
 # Flatpaks are now installed via ujust recipe after boot
 # See build_files/99-custom-flatpaks.just
 
+### 📜 Add custom ujust recipes
+log "Adding custom Flatpak management recipes to ujust..."
+if [[ -f /tmp/custom-flatpaks.just ]]; then
+    # Copy the custom recipes file to the just directory
+    cp /tmp/custom-flatpaks.just /usr/share/ublue-os/just/99-custom-flatpaks.just
+    
+    # Add import statement to main justfile
+    echo 'import "/usr/share/ublue-os/just/99-custom-flatpaks.just"' >> /usr/share/ublue-os/justfile
+    
+    rm /tmp/custom-flatpaks.just
+    echo "  ✅ Added custom Flatpak recipes to ujust"
+else
+    error "Custom Flatpak recipes file not found at /tmp/custom-flatpaks.just"
+fi
+
 ### 🔌 Enable systemd units
 log "Enabling podman socket..."
 systemctl enable podman.socket || error "Failed to enable podman.socket"
