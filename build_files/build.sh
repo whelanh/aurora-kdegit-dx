@@ -60,21 +60,21 @@ rm -f /tmp/dnf-error
 ### 🔧 KDE Build Dependencies
 log "Installing KDE build dependencies..."
 if ! dnf5 install -y --skip-broken --skip-unavailable --allowerasing \
-    git python3-dbus python3-pyyaml python3-setproctitle clang-devel 2>/tmp/dnf-error; then
+    git python3-dbus python3-pyyaml python3-setproctitle clang-devel kf6-kirigami-devel kf6-qqc2-desktop-style-devel kf6-kirigami-addons-devel clang-tools-extra git-clang-format 2>/tmp/dnf-error; then
     error "Some KDE build dependencies failed to install: $(grep -v '^Last metadata' /tmp/dnf-error | head -n5)"
 fi
 ### Get KDE dependencies list
-#log "Fetching KDE dependency list..."
-#kde_deps=$(curl -s 'https://invent.kde.org/sysadmin/repo-metadata/-/raw/master/distro-dependencies/fedora.ini' |
+# log "Fetching KDE dependency list..."
+# kde_deps=$(curl -s 'https://invent.kde.org/sysadmin/repo-metadata/-/raw/master/distro-dependencies/fedora.ini' |
 #    sed '1d' | grep -vE '^\s*#|^\s*$')
-#
-#if [[ -z "$kde_deps" ]]; then
+
+# if [[ -z "$kde_deps" ]]; then
 #    error "Failed to fetch KDE dependencies list"
 # else
 #    log "Installing KDE dependencies..."
 #    echo "$kde_deps" | xargs dnf5 install -y --skip-broken --skip-unavailable --allowerasing 2>/tmp/dnf-error || \
 #        error "Some KDE dependencies failed to install: $(grep -v '^Last metadata' /tmp/dnf-error | head -n5)"
-#fi
+# fi
 
 ### 🎮 Development Tools
 # log "Installing additional dev tools..."
