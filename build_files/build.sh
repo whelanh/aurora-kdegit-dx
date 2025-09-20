@@ -112,6 +112,22 @@ fi
 # Flatpaks are now installed via ujust recipe after boot
 # See build_files/99-custom-flatpaks.just
 
+### 🛠 Install ublue-kde-dev (manual clone + symlinks)
+log "Installing ublue-kde-dev..."
+tmpdir=$(mktemp -d)
+pushd "$tmpdir" >/dev/null
+
+git clone https://github.com/ledif/ublue-kde-dev.git
+cd ublue-kde-dev
+
+mkdir -p /usr/share/ublue-kde-dev
+cp -r ./* /usr/share/ublue-kde-dev
+
+ln -sf /usr/share/ublue-kde-dev/ublue-kde-dev.py /usr/bin/ublue-kde-dev
+
+popd >/dev/null
+rm -rf "$tmpdir"
+
 ### 📜 Add custom ujust recipes
 log "Adding custom Flatpak management recipes to ujust..."
 if [[ -f /opt/custom-flatpaks.just ]]; then
