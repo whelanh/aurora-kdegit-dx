@@ -1,4 +1,4 @@
-#!/bin/bash
+I#!/bin/bash
 set -oue pipefail
 
 log() {
@@ -105,6 +105,8 @@ fi
 # ln -sf /usr/share/kde-builder/data/completions/zsh/_kde-builder_projects_and_groups \
 #     /usr/share/zsh/site-functions/_kde-builder_projects_and_groups
 
+# chmod +x /usr/bin/kde-builder
+
 # popd >/dev/null
 # rm -rf "$tmpdir"
 
@@ -124,7 +126,7 @@ mkdir -p /usr/share/ublue-kde-dev
 cp -r ./* /usr/share/ublue-kde-dev
 
 ln -sf /usr/share/ublue-kde-dev/ublue-kde-dev.py /usr/bin/ublue-kde-dev
-chmod +x /usr/bin/kde-builder
+
 
 popd >/dev/null
 rm -rf "$tmpdir"
